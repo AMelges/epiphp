@@ -1,0 +1,16 @@
+{% extends 'base.html.twig' %}
+    {% block title %}
+        Welcome in {{ roomId }}!
+    {% endblock %}
+    {% block body %}
+        <p>
+            Welcome in {{ roomId }}!
+        </p>
+        <form action="./AddEntry" method="POST">
+            <label for="fname">First name:</label>
+            <input type="text" id="fname" name="fname"><br><br>
+            <label for="lname">Last name:</label>
+            <input type="text" id="lname" name="lname"><br><br>
+            <input type="submit" value="Submit">
+        </form>
+    {% endblock %}
