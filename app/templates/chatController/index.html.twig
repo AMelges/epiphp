@@ -7,6 +7,10 @@
             Welcome in room: {{ roomId }}!
         </p>
 
+        <pre>
+            {{ dump(content) }}
+        </pre>
+
         <textarea id="chatBox" rows="8" cols="64">
          {% for entry in content %}
              {{ entry.userId }} {{ entry.content }}

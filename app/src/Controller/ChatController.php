@@ -44,19 +44,24 @@ class ChatController extends AbstractController
 
         if(!isset($_SESSION['chatroomsData']))
         {
+            echo "Recreated chatrooms.";
             $_SESSION['chatroomsData'] = array();
         }
 
         foreach ($_SESSION['chatroomsData'] as $chatroomData)
         {
-            if ($chatroomData->roomId === $roomId) {
+            echo "Iterating over:" . var_dump($chatroomData) . "<br>";
+            if ($chatroomData->roomId == $roomId) {
                 $currentChatroomData = $chatroomData;
+                echo "Found chatroom:" . var_dump($currentChatroomData) . "<br>";
                 break;
             }
         }
 
-        if (is_null($currentChatroomData)) {
-            array_push($_SESSION['chatroomsData'], new ChatroomData($roomId, array()));
+        if (is_null($currentChatroomData))
+        {
+            $currentChatroomData = new ChatroomData($roomId, array());
+            array_push($_SESSION['chatroomsData'], $currentChatroomData);
         }
 
         return $this->render(
@@ -86,13 +91,16 @@ class ChatController extends AbstractController
         $currentChatroomData = null;
 
         if(!isset($_SESSION['chatroomsData'])) {
+            echo "Recreated chatrooms.";
             $_SESSION['chatroomsData'] = array();
         }
 
         foreach ($_SESSION['chatroomsData'] as $chatroomData)
         {
-            if ($chatroomData->roomId === $roomId) {
+            echo "Iterating over:" . var_dump($chatroomData) . "<br>";
+            if ($chatroomData->roomId == $roomId) {
                 $currentChatroomData = $chatroomData;
+                echo "Found chatroom:" . var_dump($currentChatroomData) . "<br>";
                 break;
             }
         }
@@ -109,7 +117,7 @@ class ChatController extends AbstractController
 
         return $this->render(
             'chatController/index.html.twig',
-            ['roomId' => $roomId, 'content' => $currentChatroomData->content] // 1 set for testing.
+            ['roomId' => $roomId, 'content' => $currentChatroomData->content]
         );
     }
 
