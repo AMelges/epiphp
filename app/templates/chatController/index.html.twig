@@ -4,13 +4,25 @@
     {% endblock %}
     {% block body %}
         <p>
-            Welcome in {{ roomId }}!
+            Welcome in room: {{ roomId }}!
         </p>
-        <form action="./AddEntry" method="POST">
-            <label for="fname">First name:</label>
-            <input type="text" id="fname" name="fname"><br><br>
-            <label for="lname">Last name:</label>
-            <input type="text" id="lname" name="lname"><br><br>
+
+        <textarea id="chatBox" rows="8" cols="64">
+         {% for entry in content %}
+             {{ entry.userId }} {{ entry.content }}
+         {% endfor %}
+        </textarea>
+
+        <form id="chatForm" action="./AddEntry" method="POST">
+            <input id="roomId" name="roomId" type="hidden" value={{ roomId }}>
+            <br><br>
+            <label for="userId">userId:</label>
+            <input type="text" id="userId" name="userId">
+            <br>
+            <label for="content">Content:</label>
+            <textarea name="content" id="content" type="content" form="chatForm" rows="2" cols="32"> </textarea>
+            <br>
             <input type="submit" value="Submit">
         </form>
+
     {% endblock %}

@@ -5,6 +5,8 @@
 
 namespace App\Controller;
 
+use App\ChatroomData;
+use App\ChatroomEntryData;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
@@ -17,6 +19,7 @@ use Symfony\Component\Routing\Annotation\Route;
  */
 class ChatController extends AbstractController
 {
+
     /**
      * Index action.
      *
@@ -34,9 +37,31 @@ class ChatController extends AbstractController
      */
     public function Index(int $roomId): Response
     {
+        session_start();
+
+        // TODO: Wrap to function check if room exits.
+        $currentChatroomData = null;
+
+        if(!isset($_SESSION['chatroomsData']))
+        {
+            $_SESSION['chatroomsData'] = array();
+        }
+
+        foreach ($_SESSION['chatroomsData'] as $chatroomData)
+        {
+            if ($chatroomData->roomId === $roomId) {
+                $currentChatroomData = $chatroomData;
+                break;
+            }
+        }
+
+        if (is_null($currentChatroomData)) {
+            array_push($_SESSION['chatroomsData'], new ChatroomData($roomId, array()));
+        }
+
         return $this->render(
             'chatController/index.html.twig',
-            ['roomId' => $roomId]
+            ['roomId' => $roomId, 'content'=>$currentChatroomData->content]
         );
     }
 
@@ -53,13 +78,41 @@ class ChatController extends AbstractController
      */
     public function AddEntry(Request $request): Response
     {
-        echo  "Received " . $request->getMethod();
-        echo  "Data " . $request->get("lname") . " " . $request->get("fname");
+        $roomId = $request->get("roomId");
+        $userId =  $request->get("userId") ;
+        $content = $request->get("content");
+
+        // TODO: Wrap to function check if room exits.
+        $currentChatroomData = null;
+
+        if(!isset($_SESSION['chatroomsData'])) {
+            $_SESSION['chatroomsData'] = array();
+        }
+
+        foreach ($_SESSION['chatroomsData'] as $chatroomData)
+        {
+            if ($chatroomData->roomId === $roomId) {
+                $currentChatroomData = $chatroomData;
+                break;
+            }
+        }
+
+        if (is_null($currentChatroomData))
+        {
+            $currentChatroomData = new ChatroomData($roomId, array());
+            array_push($_SESSION['chatroomsData'], $currentChatroomData);
+        }
+
+        // Add new entry to current ChatRoom.
+        $newContent = new ChatroomEntryData($userId, $content);
+        array_push($currentChatroomData->content, $newContent);
 
         return $this->render(
             'chatController/index.html.twig',
-            ['roomId' => 1] // 1 set for testing.
+            ['roomId' => $roomId, 'content' => $currentChatroomData->content] // 1 set for testing.
         );
     }
+
+    // Teoretycznie: zamienić repozytorium w kolejkę SQS, teoretycznie.
 }
 
